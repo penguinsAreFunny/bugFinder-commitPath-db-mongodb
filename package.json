@@ -1,6 +1,6 @@
 {
   "name": "bugfinder-commitpath-db-mongodb",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "DB implementation for commitPaths for MongoDB",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -41,7 +41,7 @@
     "bugfinder-localityrecorder-commit": "^1.0.1",
     "bugfinder-localityrecorder-commitpath": "^1.0.3",
     "inversify": "^5.1.1",
-    "mongodb": "^4.1.1",
+    "mongodb": "^3.6.2",
     "reflect-metadata": "^0.1.13"
   }
 }
