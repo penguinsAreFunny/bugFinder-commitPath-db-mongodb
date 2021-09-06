@@ -1,5 +1,5 @@
 {
-  "name": "bugfinder-db-commitpath-mongodb",
+  "name": "bugfinder-commitpath-db-mongodb",
   "version": "1.0.2",
   "description": "DB implementation for commitPaths for MongoDB",
   "main": "dist/index.js",
