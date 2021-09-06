@@ -41,6 +41,7 @@
     "bugfinder-localityrecorder-commit": "^1.0.1",
     "bugfinder-localityrecorder-commitpath": "^1.0.3",
     "inversify": "^5.1.1",
+    "mongodb": "^4.1.1",
     "reflect-metadata": "^0.1.13"
   }
 }
