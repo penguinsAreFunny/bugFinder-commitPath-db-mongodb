@@ -51,7 +51,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
     async writeLocalities(localities: CommitPath[], toID: string) {
         console.log(`Writing ${localities.length} localities to collection ${toID} into database...`)
         // normalize CommitPath into 2 collections: Commit, CommitPath
-        await this.writeMany(CommitPath.commits, COMMIT_LOCATION_PREFIX + toID);
+        await this.writeMany(CommitPath.getCommits(localities), COMMIT_LOCATION_PREFIX + toID);
         await this.writeMany(localities, toID);
     }
 
