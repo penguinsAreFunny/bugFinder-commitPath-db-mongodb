@@ -1,12 +1,11 @@
 import {inject, injectable} from "inversify";
 import {MongoClient, MongoError} from "mongodb";
-import * as bson from "bson";
 import {MongoDBConfig} from "./mongoDBConfig";
 import {DB} from "bugfinder-framework/dist/00-shared/db/DB";
 import {CommitPath} from "bugfinder-localityrecorder-commitpath";
 import {BUGFINDER_DB_COMMITPATH_MONGODB_TYPES} from "../TYPES";
 import {Commit} from "bugfinder-localityrecorder-commit";
-import {LocalityMap} from "bugfinder-framework";
+import {Dataset, LocalityMap} from "bugfinder-framework";
 
 const COMMIT_LOCATION_PREFIX = "__COMMITS__";
 
@@ -144,6 +143,15 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
 
         await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID);
         await this.writeMany(quantiArray, toID);
+    }
+
+    async readDataset(fromID: string): Promise<Dataset> {
+        const dataset = (await this.read(fromID))[0]
+        return dataset[0]
+    }
+
+    async writeDataset(toID: string, dataset: Dataset): Promise<void> {
+        await this.write(dataset, toID)
     }
 
     private async read(fromID: string, skip?: number, n?: number): Promise<any[]> {
