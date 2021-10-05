@@ -1,7 +1,7 @@
 import { MongoDBConfig } from "./mongoDBConfig";
 import { DB } from "bugfinder-framework/dist/00-shared/db/DB";
 import { CommitPath } from "bugfinder-localityrecorder-commitpath";
-import { LocalityMap } from "bugfinder-framework";
+import { Dataset, LocalityMap } from "bugfinder-framework";
 export declare class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
     dbConfig: MongoDBConfig;
     /**
@@ -18,6 +18,8 @@ export declare class CommitPathsMongoDB<Annotation, Quantification> implements D
     writeAnnotations(annotations: LocalityMap<CommitPath, Annotation>, toID: string): Promise<void>;
     readQuantifications(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Quantification>>;
     writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string): Promise<void>;
+    readDataset(fromID: string): Promise<Dataset>;
+    writeDataset(toID: string, dataset: Dataset): Promise<void>;
     private read;
     write(obj: any, toID: string): Promise<void>;
     writeMany(objs: any[], toID: string): Promise<void>;
