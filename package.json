@@ -44,6 +44,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "peerDependencies": {
-    "bugfinder-framework": "^9.0.3"
+    "bugfinder-framework": "^9.2.0"
   }
 }
