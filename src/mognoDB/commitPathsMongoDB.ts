@@ -1,16 +1,20 @@
 import {inject, injectable} from "inversify";
-import {MongoClient, MongoError} from "mongodb";
+import {MongoClient} from "mongodb";
 import {MongoDBConfig} from "./mongoDBConfig";
 import {DB} from "bugfinder-framework/dist/00-shared/db/DB";
 import {CommitPath} from "bugfinder-localityrecorder-commitpath";
 import {BUGFINDER_DB_COMMITPATH_MONGODB_TYPES} from "../TYPES";
 import {Commit} from "bugfinder-localityrecorder-commit";
-import {Dataset, LocalityMap} from "bugfinder-framework";
+import {LocalityMap, DatasetAP, DatasetAFE} from "bugfinder-framework";
+import {Logger} from "ts-logger"
 
 const COMMIT_LOCATION_PREFIX = "__COMMITS__";
 
 @injectable()
 export class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
+
+    @inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.logger)
+    logger: Logger
 
     /**
      *
@@ -23,7 +27,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
      * Reads CommitPaths from DB configured with mongoDBConfig while considering this.pathsHandling-configuration
      */
     async readLocalities(fromID: string, skip?: number, n?: number): Promise<CommitPath[]> {
-        console.log(`Reading localities from collection ${fromID} using database ${this.dbConfig.dbName} ` +
+        this.logger?.info(`Reading localities from collection ${fromID} using database ${this.dbConfig.dbName} ` +
             `from ${this.dbConfig.url}...`)
 
         const commitPaths: CommitPath[] = await this.read(fromID, skip, n);
@@ -43,19 +47,19 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
             CommitPath.pushCommit(commit)
         })
 
-        console.log(`Found ${commitPaths.length} localities in database`);
+        this.logger?.info(`Found ${commitPaths.length} localities in database`);
         return commitPaths;
     }
 
     async writeLocalities(localities: CommitPath[], toID: string) {
-        console.log(`Writing ${localities.length} localities to collection ${toID} into database...`)
+        this.logger?.info(`Writing ${localities.length} localities to collection ${toID} into database...`)
         // normalize CommitPath into 2 collections: Commit, CommitPath
         await this.writeMany(CommitPath.getCommits(localities), COMMIT_LOCATION_PREFIX + toID);
         await this.writeMany(localities, toID);
     }
 
     async readAnnotations(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Annotation>> {
-        console.log(`Reading annotations from collection ${fromID} using database ${this.dbConfig.dbName} ` +
+        this.logger?.info(`Reading annotations from collection ${fromID} using database ${this.dbConfig.dbName} ` +
             `from ${this.dbConfig.url}...`)
 
         const commits: Commit[] = await this.read(COMMIT_LOCATION_PREFIX + fromID);
@@ -76,12 +80,12 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         const locMap = new LocalityMap<CommitPath, Annotation>();
         locMap.fromArray(annotations);
 
-        console.log(`Found ${annotations.length} annotations in database`);
+        this.logger?.info(`Found ${annotations.length} annotations in database`);
         return locMap;
     }
 
     async writeAnnotations(annotations: LocalityMap<CommitPath, Annotation>, toID: string): Promise<void> {
-        console.log(`Writing ${annotations.size()} annotations to collection ${toID} using database ` +
+        this.logger?.info(`Writing ${annotations.size()} annotations to collection ${toID} using database ` +
             `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
         const annosArray = annotations.toArray();
         const cps: CommitPath[] = annosArray.map(el => {
@@ -94,7 +98,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
     }
 
     async readQuantifications(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Quantification>> {
-        console.log(`Reading quantifications from collection ${fromID} using database ${this.dbConfig.dbName} ` +
+        this.logger?.info(`Reading quantifications from collection ${fromID} using database ${this.dbConfig.dbName} ` +
             `from ${this.dbConfig.url}...`)
 
         const commits: Commit[] = await this.read(COMMIT_LOCATION_PREFIX + fromID);
@@ -116,12 +120,12 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         const locMap = new LocalityMap<CommitPath, Quantification>();
         locMap.fromArray(quantifications);
 
-        console.log(`Found ${quantifications.length} quantifications in database`);
+        this.logger?.info(`Found ${quantifications.length} quantifications in database`);
         return locMap;
     }
 
     async writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string): Promise<void> {
-        console.log(`Writing ${quantifications.size()} quantifications to collection ${toID} using database ` +
+        this.logger?.info(`Writing ${quantifications.size()} quantifications to collection ${toID} using database ` +
             `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
         const quantiArray = quantifications.toArray();
         const cps: CommitPath[] = quantiArray.map(el => {
@@ -129,28 +133,25 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         });
         const normalizedCPs = CommitPath.normalize(cps);
 
-        /*
-        const quantisWithReferencesCommits = quantiArray.map(el => {
-            return {
-                key: {
-                    parentKey: el.key.commit.key(),
-                    path: el.key.path
-                },
-                val: el.val
-            }
-        })
-        */
-
         await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID);
         await this.writeMany(quantiArray, toID);
     }
 
-    async readDataset(fromID: string): Promise<Dataset> {
+    async readDatasetAP(fromID: string): Promise<DatasetAP> {
         const dataset = (await this.read(fromID))[0]
         return dataset[0]
     }
 
-    async writeDataset(toID: string, dataset: Dataset): Promise<void> {
+    async writeDatasetAP(toID: string, dataset: DatasetAP): Promise<void> {
+        await this.write(dataset, toID)
+    }
+
+    async readDatasetAFE(fromID: string): Promise<DatasetAFE> {
+        const dataset = (await this.read(fromID))[0]
+        return dataset[0]
+    }
+
+    async writeDatasetAFE(toID: string, dataset: DatasetAFE): Promise<void> {
         await this.write(dataset, toID)
     }
 
@@ -171,14 +172,11 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return dbContent;
     }
 
-    async write(obj: any, toID: string) {
-        const elementsInCollection = await this.read(toID);
-
-        if (elementsInCollection.length > 0) {
-            const err = new MongoError(`Found ${elementsInCollection.length} elements in database collection ${toID}.
-                Database collection commits should be empty! Aborting Writing to DB. Please delete all elements 
-                in collection ${toID} to prevent redundancy.`);
-            throw(err);
+    async write(obj: any, toID: string, mode: string = "w") {
+        if (mode != "a") {
+            // do not write to collection if there are already elements!
+            const emptyCol = await this.empty(toID, true)
+            if (emptyCol) return
         }
 
         // @formatter:off
@@ -192,15 +190,12 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         await client.close();
     }
 
-    async writeMany(objs: any[], toID: string) {
-
-        const elementsInCollection = await this.read(toID);
-
-        if (elementsInCollection.length > 0) {
-            const err = new MongoError(`Found ${elementsInCollection.length} elements in database collection ${toID}.
-                Database collection commits should be empty! Aborting Writing to DB. Please delete all elements 
-                in collection ${toID} to prevent redundancy.`);
-            throw(err);
+    async writeMany(objs: any[], toID: string, mode: string = "w") {
+        if (mode != "a") {
+            // do not write to collection if there are already elements!
+            const emptyCol = await this.empty(toID, true)
+            if (emptyCol)
+                return
         }
 
         // @formatter:off
@@ -215,14 +210,32 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
     }
 
     /**
+     * Returns true if collection is empty. Logs error if error is set to true
+     * @param toID
+     * @param error
+     * @private
+     */
+    private async empty(toID: string, error: boolean): Promise<boolean> {
+        const elementsInCollection = await this.read(toID);
+        const numberElInCol = elementsInCollection.length
+        if (numberElInCol > 0) {
+            if (error) {
+                this.logger?.error(`Found ${numberElInCol} elements in database collection ${toID}.
+                Database collection commits should be empty! Aborting Writing to DB. Please delete all elements 
+                in collection ${toID} to prevent redundancy.`)
+            }
+            return false
+        }
+        return true
+    }
+
+    /**
      * Set Methods to CommitPath-Objects as only DTOs are saved in database
      * @param commitPath
      * @private
      */
     private setMethods(commitPath: CommitPath) {
-        // TODO iterate over all method-attributes and set the right prototypes (generic) => if you add CommitPath Methods this
-        // TODO function should still work finde
-        // TODO: delete me
+        // TODO: implement generic method of this. Changes to CommitPath should not affect this method!
         commitPath.key = CommitPath.prototype.key;
         commitPath.is = CommitPath.prototype.is;
     }
