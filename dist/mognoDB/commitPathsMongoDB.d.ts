@@ -1,9 +1,11 @@
 import { MongoDBConfig } from "./mongoDBConfig";
 import { DB } from "bugfinder-framework/dist/00-shared/db/DB";
 import { CommitPath } from "bugfinder-localityrecorder-commitpath";
-import { Dataset, LocalityMap } from "bugfinder-framework";
+import { LocalityMap, DatasetAP, DatasetAFE } from "bugfinder-framework";
+import { Logger } from "ts-logger";
 export declare class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
     dbConfig: MongoDBConfig;
+    logger: Logger;
     /**
      *
      * @param dbConfig
@@ -18,11 +20,20 @@ export declare class CommitPathsMongoDB<Annotation, Quantification> implements D
     writeAnnotations(annotations: LocalityMap<CommitPath, Annotation>, toID: string): Promise<void>;
     readQuantifications(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Quantification>>;
     writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string): Promise<void>;
-    readDataset(fromID: string): Promise<Dataset>;
-    writeDataset(toID: string, dataset: Dataset): Promise<void>;
+    readDatasetAP(fromID: string): Promise<DatasetAP>;
+    writeDatasetAP(toID: string, dataset: DatasetAP): Promise<void>;
+    readDatasetAFE(fromID: string): Promise<DatasetAFE>;
+    writeDatasetAFE(toID: string, dataset: DatasetAFE): Promise<void>;
     private read;
-    write(obj: any, toID: string): Promise<void>;
-    writeMany(objs: any[], toID: string): Promise<void>;
+    write(obj: any, toID: string, mode?: string): Promise<void>;
+    writeMany(objs: any[], toID: string, mode?: string): Promise<void>;
+    /**
+     * Returns true if collection is empty. Logs error if error is set to true
+     * @param toID
+     * @param error
+     * @private
+     */
+    private empty;
     /**
      * Set Methods to CommitPath-Objects as only DTOs are saved in database
      * @param commitPath
