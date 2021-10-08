@@ -13,14 +13,8 @@ const COMMIT_LOCATION_PREFIX = "__COMMITS__";
 @injectable()
 export class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
 
-    @inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.logger)
-    logger: Logger
-
-    /**
-     *
-     * @param dbConfig
-     */
-    constructor(@inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.mongoDBConfig) public dbConfig: MongoDBConfig) {
+    constructor(@inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.logger) private logger: Logger,
+                @inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.mongoDBConfig) public dbConfig: MongoDBConfig) {
     }
 
     /**
@@ -51,11 +45,16 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return commitPaths;
     }
 
-    async writeLocalities(localities: CommitPath[], toID: string) {
+    /**
+     * Writes localities to DB at location (collection/table/file/...) toID. With mode = "a" data will be appended.
+     * @param localities
+     * @param toID
+     */
+    async writeLocalities(localities: CommitPath[], toID: string, mode = "w") {
         this.logger?.info(`Writing ${localities.length} localities to collection ${toID} into database...`)
         // normalize CommitPath into 2 collections: Commit, CommitPath
-        await this.writeMany(CommitPath.getCommits(localities), COMMIT_LOCATION_PREFIX + toID);
-        await this.writeMany(localities, toID);
+        await this.writeMany(CommitPath.getCommits(localities), COMMIT_LOCATION_PREFIX + toID, mode);
+        await this.writeMany(localities, toID, mode);
     }
 
     async readAnnotations(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Annotation>> {
@@ -84,7 +83,13 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return locMap;
     }
 
-    async writeAnnotations(annotations: LocalityMap<CommitPath, Annotation>, toID: string): Promise<void> {
+    /**
+     * Writes annotation to DB at location (collection/table/file/...) toID. With mode = "a" data will be appended.
+     * @param annotations
+     * @param toID
+     * @param mode
+     */
+    async writeAnnotations(annotations: LocalityMap<CommitPath, Annotation>, toID: string, mode = "w"): Promise<void> {
         this.logger?.info(`Writing ${annotations.size()} annotations to collection ${toID} using database ` +
             `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
         const annosArray = annotations.toArray();
@@ -93,8 +98,8 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         });
         const normalizedCPs = CommitPath.normalize(cps);
 
-        await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID);
-        await this.writeMany(annosArray, toID);
+        await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID, mode);
+        await this.writeMany(annosArray, toID, mode);
     }
 
     async readQuantifications(fromID: string, skip?: number, n?: number): Promise<LocalityMap<CommitPath, Quantification>> {
@@ -124,7 +129,12 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return locMap;
     }
 
-    async writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string): Promise<void> {
+    /**
+     * Writes quantifications to DB at location (collection/table/file/...) toID. With mode = "a" data will be appended.
+     * @param quantifications
+     * @param toID
+     */
+    async writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string, mode = "w"): Promise<void> {
         this.logger?.info(`Writing ${quantifications.size()} quantifications to collection ${toID} using database ` +
             `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
         const quantiArray = quantifications.toArray();
@@ -133,8 +143,8 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         });
         const normalizedCPs = CommitPath.normalize(cps);
 
-        await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID);
-        await this.writeMany(quantiArray, toID);
+        await this.writeMany(normalizedCPs.commits, COMMIT_LOCATION_PREFIX + toID, mode);
+        await this.writeMany(quantiArray, toID, mode);
     }
 
     async readDatasetAP(fromID: string): Promise<DatasetAP> {
@@ -142,8 +152,13 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return dataset[0]
     }
 
-    async writeDatasetAP(toID: string, dataset: DatasetAP): Promise<void> {
-        await this.write(dataset, toID)
+    /**
+     * Writes DatasetAP to DB at location (collection/table/file/...) toID. With mode = "a" data will be appended.
+     * @param toID
+     * @param dataset
+     */
+    async writeDatasetAP(toID: string, dataset: DatasetAP, mode = "w"): Promise<void> {
+        await this.write(dataset, toID, mode)
     }
 
     async readDatasetAFE(fromID: string): Promise<DatasetAFE> {
@@ -151,8 +166,13 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         return dataset[0]
     }
 
-    async writeDatasetAFE(toID: string, dataset: DatasetAFE): Promise<void> {
-        await this.write(dataset, toID)
+    /**
+     * Writes DatasetAFE to DB at location (collection/table/file/...) toID. With mode = "a" data will be appended.
+     * @param toID
+     * @param dataset
+     */
+    async writeDatasetAFE(toID: string, dataset: DatasetAFE, mode = "w"): Promise<void> {
+        await this.write(dataset, toID, mode)
     }
 
     private async read(fromID: string, skip?: number, n?: number): Promise<any[]> {
