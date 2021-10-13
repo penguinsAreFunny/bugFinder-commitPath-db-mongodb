@@ -27,21 +27,21 @@
   "keyword": "bugfinder",
   "license": "ISC",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.26.1",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.26.1",
-    "@typescript-eslint/parser": "^4.26.1",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "rimraf": "^3.0.2",
-    "source-map-support": "^0.5.19",
-    "typescript": "^4.3.2"
+    "source-map-support": "^0.5.20",
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "@types/mongodb": "^3.6.17",
     "@types/node": "^15.12.2",
     "bugfinder-framework": "^9.6.0",
-    "bugfinder-localityrecorder-commit": "^1.0.1",
-    "bugfinder-localityrecorder-commitpath": "^1.0.3",
+    "bugfinder-localityrecorder-commit": "^1.2.0",
+    "bugfinder-localityrecorder-commitpath": "^1.21.0",
     "inversify": "^5.1.1",
-    "mongodb": "^3.6.2",
+    "mongodb": "^3.7.2",
     "reflect-metadata": "^0.1.13",
     "ts-logger": "^0.1.5"
   },
