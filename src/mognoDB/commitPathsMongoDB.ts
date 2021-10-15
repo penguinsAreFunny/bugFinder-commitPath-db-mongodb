@@ -5,7 +5,7 @@ import {DB, WriteMode} from "bugfinder-framework/dist/00-shared/db/DB";
 import {CommitPath} from "bugfinder-localityrecorder-commitpath";
 import {BUGFINDER_DB_COMMITPATH_MONGODB_TYPES} from "../TYPES";
 import {Commit} from "bugfinder-localityrecorder-commit";
-import {DatasetAFE, DatasetAP, LocalityMap} from "bugfinder-framework";
+import {DatasetAFE, DatasetAP, LocalityMap, SHARED_TYPES} from "bugfinder-framework";
 import {Logger} from "ts-logger"
 
 const COMMIT_LOCATION_PREFIX = "__COMMITS__";
@@ -13,7 +13,7 @@ const COMMIT_LOCATION_PREFIX = "__COMMITS__";
 @injectable()
 export class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
 
-    constructor(@inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.logger) private logger: Logger,
+    constructor(@inject(SHARED_TYPES.logger) private logger: Logger,
                 @inject(BUGFINDER_DB_COMMITPATH_MONGODB_TYPES.mongoDBConfig) public dbConfig: MongoDBConfig) {
     }
 
