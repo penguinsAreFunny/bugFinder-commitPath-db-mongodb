@@ -181,7 +181,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
 
     private async read(fromID: string, skip?: number, n?: number): Promise<any[]> {
         // @formatter:off
-        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url, {useUnifiedTopology: true});
+        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url);
         const db                    = client.db(this.dbConfig.dbName);
         const collectionName        = fromID;
         const collection            = db.collection(collectionName);
@@ -210,7 +210,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         }
 
         // @formatter:off
-        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url, {useUnifiedTopology: true});
+        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url);
         const db                    = client.db(this.dbConfig.dbName);
         const collectionName        = toID;
         const collection            = db.collection(collectionName);
@@ -234,7 +234,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         }
 
         // @formatter:off
-        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url, {useUnifiedTopology: true});
+        const client: MongoClient   = await MongoClient.connect(this.dbConfig.url);
         const db                    = client.db(this.dbConfig.dbName);
         const collectionName        = toID;
         const collection            = db.collection(collectionName);
