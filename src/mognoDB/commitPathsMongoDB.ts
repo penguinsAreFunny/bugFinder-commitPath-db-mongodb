@@ -222,11 +222,9 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
 
         const readable = Readable.from(JSON.stringify(obj))
         const bucket = new GridFSBucket(db, {bucketName: toID});
-        console.log("Writing to db")
         return new Promise((resolve, reject) => {
             readable.pipe(bucket.openUploadStream(toID))
                 .on('finish', () => {
-                    console.log('done!');
                     client.close()
                     resolve(true)
                 })
@@ -320,7 +318,6 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
     private async empty(toID: string, error: boolean): Promise<boolean> {
         const elementsInCollection = await this.read(toID);
         const numberElInCol = elementsInCollection.length
-        console.log("JUP", numberElInCol, " ", toID)
         if (numberElInCol > 0) {
             if (error) {
                 this.logger?.error(`Found ${numberElInCol} elements in database collection ${toID}.
