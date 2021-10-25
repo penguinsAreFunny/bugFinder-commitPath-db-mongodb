@@ -37,15 +37,12 @@
   "dependencies": {
     "@types/mongodb": "^3.6.20",
     "@types/node": "^15.12.2",
-    "bugfinder-framework": "^9.7.0",
+    "bugfinder-framework": "^9.10.1",
     "bugfinder-localityrecorder-commit": "^2.5.0",
     "bugfinder-localityrecorder-commitpath": "^1.21.0",
     "inversify": "^5.1.1",
     "mongodb": "^4.1.3",
     "reflect-metadata": "^0.1.13",
     "ts-logger": "^0.1.5"
-  },
-  "peerDependencies": {
-    "bugfinder-framework": "^9.2.0"
   }
 }
