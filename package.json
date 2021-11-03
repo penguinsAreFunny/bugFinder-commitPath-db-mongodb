@@ -36,7 +36,7 @@
   "dependencies": {
     "@types/mongodb": "^3.6.20",
     "@types/node": "^15.12.2",
-    "bugfinder-framework": "^9.13.2",
+    "bugfinder-framework": "^10.0.0",
     "bugfinder-localityrecorder-commit": "^2.5.0",
     "bugfinder-localityrecorder-commitpath": "^1.21.0",
     "inversify": "^5.1.1",
