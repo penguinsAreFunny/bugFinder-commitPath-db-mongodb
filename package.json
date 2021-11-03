@@ -5,9 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc --project .",
-    "clean": "rimraf ./dist",
-    "prepare": "npm run build",
+    "build": "npm run clean && npx tsc --project .",
+    "clean": "npx rimraf ./dist",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags",
     "pack": "npm pack"
@@ -37,7 +36,7 @@
   "dependencies": {
     "@types/mongodb": "^3.6.20",
     "@types/node": "^15.12.2",
-    "bugfinder-framework": "^9.12.0",
+    "bugfinder-framework": "^9.13.2",
     "bugfinder-localityrecorder-commit": "^2.5.0",
     "bugfinder-localityrecorder-commitpath": "^1.21.0",
     "inversify": "^5.1.1",

@@ -4,7 +4,7 @@ import {MongoDBConfig} from "./mongoDBConfig";
 import {CommitPath} from "bugfinder-localityrecorder-commitpath";
 import {BUGFINDER_DB_COMMITPATH_MONGODB_TYPES} from "../TYPES";
 import {Commit} from "bugfinder-localityrecorder-commit";
-import {DatasetAFE, DatasetAP, LocalityMap, DB, WriteMode, SHARED_TYPES} from "bugfinder-framework";
+import {Dataset, LocalityMap, DB, WriteMode, SHARED_TYPES} from "bugfinder-framework";
 import {Logger} from "ts-log"
 import {Readable} from "stream";
 
@@ -150,7 +150,7 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         await this.writeMany(quantiArray, toID, mode);
     }
 
-    async readDatasetAP(fromID: string): Promise<DatasetAP> {
+    async readDataset(fromID: string): Promise<Dataset> {
         this.logger?.info(`Reading datasetAP from collection ${fromID} using database ${this.dbConfig.dbName} ` +
             `from ${this.dbConfig.url}...`)
         return await this.readLarge(fromID)
@@ -160,27 +160,9 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
      * Writes DatasetAP to DB at location (collection/table/file/...) toID.
      * @param toID
      * @param dataset
-     * @param mode
      */
-    async writeDatasetAP(toID: string, dataset: DatasetAP): Promise<void> {
+    async writeDataset(toID: string, dataset: Dataset): Promise<void> {
         this.logger?.info(`Writing datasetAP to collection ${toID} using database ` +
-            `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
-        if (!await this.empty(toID + COLLECTION_FILES_APPENDIX, true))
-            return
-        await this.writeLarge(dataset, toID)
-    }
-
-    async readDatasetAFE(fromID: string): Promise<DatasetAFE> {
-        return await this.readLarge(fromID)
-    }
-
-    /**
-     * Writes DatasetAFE to DB at location (collection/table/file/...) toID.
-     * @param toID
-     * @param dataset
-     */
-    async writeDatasetAFE(toID: string, dataset: DatasetAFE): Promise<void> {
-        this.logger?.info(`Writing datasetAFE to collection ${toID} using database ` +
             `${this.dbConfig.dbName} from ${this.dbConfig.url}...`)
         if (!await this.empty(toID + COLLECTION_FILES_APPENDIX, true))
             return
@@ -339,6 +321,5 @@ export class CommitPathsMongoDB<Annotation, Quantification> implements DB<Commit
         commitPath.key = CommitPath.prototype.key;
         commitPath.is = CommitPath.prototype.is;
     }
-
 }
 
