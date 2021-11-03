@@ -1,6 +1,6 @@
 import { MongoDBConfig } from "./mongoDBConfig";
 import { CommitPath } from "bugfinder-localityrecorder-commitpath";
-import { DatasetAFE, DatasetAP, LocalityMap, DB, WriteMode } from "bugfinder-framework";
+import { Dataset, LocalityMap, DB, WriteMode } from "bugfinder-framework";
 import { Logger } from "ts-log";
 export declare class CommitPathsMongoDB<Annotation, Quantification> implements DB<CommitPath, Annotation, Quantification> {
     private logger;
@@ -33,21 +33,13 @@ export declare class CommitPathsMongoDB<Annotation, Quantification> implements D
      * @param mode
      */
     writeQuantifications(quantifications: LocalityMap<CommitPath, Quantification>, toID: string, mode?: WriteMode): Promise<void>;
-    readDatasetAP(fromID: string): Promise<DatasetAP>;
+    readDataset(fromID: string): Promise<Dataset>;
     /**
      * Writes DatasetAP to DB at location (collection/table/file/...) toID.
      * @param toID
      * @param dataset
-     * @param mode
      */
-    writeDatasetAP(toID: string, dataset: DatasetAP): Promise<void>;
-    readDatasetAFE(fromID: string): Promise<DatasetAFE>;
-    /**
-     * Writes DatasetAFE to DB at location (collection/table/file/...) toID.
-     * @param toID
-     * @param dataset
-     */
-    writeDatasetAFE(toID: string, dataset: DatasetAFE): Promise<void>;
+    writeDataset(toID: string, dataset: Dataset): Promise<void>;
     private read;
     /**
      * Writes a large (> 16 MB) obj to Database.
